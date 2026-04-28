@@ -163,13 +163,10 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
-    # bomb = Bomb((255, 0, 0), 10)
+    
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
-    # for i in range(NUM_OF_BOMBS):
-    #     bomb = Bomb((255, 0, 0), 10)
-    #     bombs.appned(bomb)
-
-    beam = None  # ゲーム初期化時にはビームは存在しない
+    beams = [] 
+    
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -177,13 +174,26 @@ def main():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                beams.append(Beam(bird))           
+
         screen.blit(bg_img, [0, 0])
         
+        for i, beam in enumerate(beams):
+            for j, bomb in enumerate(bombs):
+                if beam is not None and bomb is not None:
+                    if beam.rct.colliderect(bomb.rct):
+                        beams[i] = None 
+                        bombs[j] = None 
+                        score.value += 1
+
+        beams = [b for b in beams if b is not None]
+        bombs = [b for b in bombs if b is not None]
+
+        
+        beams = [b for b in beams if check_bound(b.rct) == (True, True)]
+
         for bomb in bombs:
             if bird.rct.colliderect(bomb.rct):
-                # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
                 fonto = pg.font.Font(None, 80)
                 txt = fonto.render("Game Over", True, (255, 0, 0))
                 screen.blit(txt, [WIDTH//2-150, HEIGHT//2])
@@ -191,25 +201,16 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
-        
-        for i, bomb in enumerate(bombs):
-            if beam is not None:
-                if beam.rct.colliderect(bomb.rct):  # 練習2：爆弾とビームの衝突判定
-                    beam = None
-                    bombs[i] = None
-                    score.value+=1
-                    bird.change_img(6, screen)  # 練習3：こうかとん喜びエフェクト
-                    pg.display.update()
-                    time.sleep(1)
-        
-        bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        if beam is not None:
+     
+        for beam in beams:
             beam.update(screen)
+            
         for bomb in bombs:
             bomb.update(screen)
+            
         score.update(screen)
         pg.display.update()
         tmr += 1
