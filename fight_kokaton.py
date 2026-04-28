@@ -93,7 +93,7 @@ class Beam:
         ビーム画像Surfaceを生成する
         引数 bird：ビームを放つこうかとん（Birdインスタンス）
         """
-        self.img = pg.img.load(f"fig/beam.png")
+        self.img = pg.image.load(f"fig/beam.png")
         self.rct = self.img.get_rect()
         self.rct.centery = bird.rct.centery
         self.rct.left = bird.rct.right
@@ -167,7 +167,8 @@ def main():
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        beam.update(screen)   
+        if beam is not None:
+            beam.update(screen)  
         bomb.update(screen)
         pg.display.update()
         tmr += 1
