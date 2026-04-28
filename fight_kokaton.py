@@ -109,6 +109,21 @@ class Beam:
             self.rct.move_ip(self.vx, self.vy)
             screen.blit(self.img, self.rct)    
 
+class Score:
+    """
+    スコア表示
+    """
+    def __init__(self):
+        self.fonto = pg.font.SysFont(None, 30)
+        self.color = (0, 0, 255)
+        self.value = 0
+        self.img = self.fonto.render(f"Score: {self.value}", 0, self.color)
+        self.rct = self.img.get_rect()
+        self.rct.center = (100, HEIGHT - 50)
+
+    def update(self, screen: pg.Surface):
+        self.img = self.fonto.render(f"Score: {self.value}", 0, self.color)
+        screen.blit(self.img, self.rct)
 
 class Bomb:
     """
@@ -141,7 +156,9 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
+
 def main():
+    score = Score()
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("fig/pg_bg.jpg")
@@ -180,6 +197,7 @@ def main():
                 if beam.rct.colliderect(bomb.rct):  # 練習2：爆弾とビームの衝突判定
                     beam = None
                     bombs[i] = None
+                    score.value+=1
                     bird.change_img(6, screen)  # 練習3：こうかとん喜びエフェクト
                     pg.display.update()
                     time.sleep(1)
@@ -192,6 +210,7 @@ def main():
             beam.update(screen)
         for bomb in bombs:
             bomb.update(screen)
+        score.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
