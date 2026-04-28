@@ -187,7 +187,7 @@ def main():
                         score.value += 1
 
         beams = [b for b in beams if b is not None]
-        bombs = [b for b in bombs if b is not None]
+        bombs = [c for c in bombs if c is not None]
 
         
         beams = [b for b in beams if check_bound(b.rct) == (True, True)]
